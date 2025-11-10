@@ -16,6 +16,12 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0); // Add this for refresh mechanism
+
+  // Function to trigger refresh
+  const triggerRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
 
   // Check if user is already authenticated on app load
   useEffect(() => {
@@ -207,12 +213,12 @@ function App() {
           {(activeTab === 'email' || activeTab === 'resume' || activeTab === 'boolean' || activeTab === 'notes' || activeTab === 'organizer' || activeTab === 'matcher') && (
             <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
               <div className="p-4 sm:p-6 md:p-8">
-                {activeTab === 'email' && <EmailDrafter userId={userId} />}
-                {activeTab === 'resume' && <ResumeFormatter />}
-                {activeTab === 'boolean' && <BooleanSkillExtractor userId={userId} />}
-                {activeTab === 'notes' && <QuickNotes />}
-                {activeTab === 'organizer' && <SmartOrganizer userId={userId} />}
-                {activeTab === 'matcher' && <ResumeMatcher userId={userId} />}
+                {activeTab === 'email' && <EmailDrafter key={`email-${refreshKey}`} userId={userId} triggerRefresh={triggerRefresh} />}
+                {activeTab === 'resume' && <ResumeFormatter key={`resume-${refreshKey}`} />}
+                {activeTab === 'boolean' && <BooleanSkillExtractor key={`boolean-${refreshKey}`} userId={userId} triggerRefresh={triggerRefresh} />}
+                {activeTab === 'notes' && <QuickNotes key={`notes-${refreshKey}`} />}
+                {activeTab === 'organizer' && <SmartOrganizer key={`organizer-${refreshKey}`} userId={userId} triggerRefresh={triggerRefresh} />}
+                {activeTab === 'matcher' && <ResumeMatcher key={`matcher-${refreshKey}`} userId={userId} />}
               </div>
             </div>
           )}

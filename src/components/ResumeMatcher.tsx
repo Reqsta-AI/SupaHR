@@ -4,9 +4,10 @@ import ResumeMatchCard from "./ResumeMatchCard";
 // Define props interface
 interface ResumeMatcherProps {
   userId: string | null;
+  triggerRefresh?: () => void; // Add optional triggerRefresh prop
 }
 
-const ResumeMatcher: React.FC<ResumeMatcherProps> = ({ userId }) => {
+const ResumeMatcher: React.FC<ResumeMatcherProps> = ({ userId, triggerRefresh }) => {
   const [jdFile, setJdFile] = useState<File | null>(null);
   const [resumeFiles, setResumeFiles] = useState<File[]>([]);
   const [jdText, setJdText] = useState("");
@@ -167,80 +168,109 @@ const ResumeMatcher: React.FC<ResumeMatcherProps> = ({ userId }) => {
   };
 
   const processRequest = async (formData: FormData) => {
-    try {
-      const response = await fetch(
-        "https://ai-nuto.vercel.app/api/hr/resume-match",
-        {
-          method: "POST",
-          body: formData,
+    let retries = 0;
+    const maxRetries = 1;
+    
+    while (retries <= maxRetries) {
+      try {
+        const response = await fetch(
+          "https://ai-nuto.vercel.app/api/hr/resume-match",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Transform the API response to match the existing UI structure
+          const transformedResults = data.results
+            .filter((result: any) => !result.error) // Filter out errored results
+            .map((result: any, index: number) => {
+              const matchResult = result.matchResult;
+              console.log("TEST", matchResult);
+
+              return {
+                id: index + 1,
+                name: result.filename,
+                compatibilityScore: matchResult.compatibilityScore || 0,
+                match:
+                  matchResult.compatibilityScore >= 90
+                    ? "Perfect Match"
+                    : matchResult.compatibilityScore >= 80
+                    ? "Excellent Match"
+                    : matchResult.compatibilityScore >= 70
+                    ? "Good Match"
+                    : matchResult.compatibilityScore >= 60
+                    ? "Fair Match"
+                    : "Poor Match",
+                skills:
+                  matchResult.matchedSkills
+                    ?.slice(0, 4)
+                    .map((s: any) => s.skill) || [],
+                experience: `${matchResult.totalYearOfExperience || 0} years`,
+                location: matchResult.profileDetails?.location || "Not specified",
+                decisionRationale: matchResult.decisionRationale || "",
+                strengths: matchResult.strengths || [],
+                weaknesses: matchResult.weaknesses || [],
+                // New detailed fields
+                requiredSkills: matchResult.requiredSkills || [],
+                matchedSkills: matchResult.matchedSkills || [],
+                unmatchedSkills: matchResult.unmatchedSkills || [],
+                skillsScore: matchResult.skillsScore || 0,
+                toolsJobDescription: matchResult.toolsJobDescription || [],
+                matchedTools: matchResult.matchedTools || [],
+                unmatchedTools: matchResult.unmatchedTools || [],
+                toolsScore: matchResult.toolsScore || 0,
+                rolesJobDescription: matchResult.rolesJobDescription || [],
+                matchedRoles: matchResult.matchedRoles || [],
+                unmatchedRoles: matchResult.unmatchedRoles || [],
+                rolesScore: matchResult.rolesScore || 0,
+                industry: matchResult.industry || [],
+                resumeFit: matchResult.resumeFit || "",
+                profileDetails: matchResult.profileDetails || {},
+                _id: result._id || null // If saved in backend
+              };
+            });
+
+          setResults(transformedResults);
+          setActiveTab('match'); // Switch to results tab
+          
+          // Clear input files after successful processing
+          setJdFile(null);
+          setJdText('');
+          setResumeFiles([]);
+          
+          // Call triggerRefresh if provided
+          if (triggerRefresh) {
+            triggerRefresh();
+          }
+          
+          return; // Success, exit the retry loop
+        } else {
+          if (retries < maxRetries) {
+            retries++;
+            console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+            continue;
+          }
+          setError(data.message || "Failed to match resumes");
+          return;
         }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Transform the API response to match the existing UI structure
-        const transformedResults = data.results
-          .filter((result: any) => !result.error) // Filter out errored results
-          .map((result: any, index: number) => {
-            const matchResult = result.matchResult;
-            console.log("TEST", matchResult);
-
-            return {
-              id: index + 1,
-              name: result.filename,
-              compatibilityScore: matchResult.compatibilityScore || 0,
-              match:
-                matchResult.compatibilityScore >= 90
-                  ? "Perfect Match"
-                  : matchResult.compatibilityScore >= 80
-                  ? "Excellent Match"
-                  : matchResult.compatibilityScore >= 70
-                  ? "Good Match"
-                  : matchResult.compatibilityScore >= 60
-                  ? "Fair Match"
-                  : "Poor Match",
-              skills:
-                matchResult.matchedSkills
-                  ?.slice(0, 4)
-                  .map((s: any) => s.skill) || [],
-              experience: `${matchResult.totalYearOfExperience || 0} years`,
-              location: matchResult.profileDetails?.location || "Not specified",
-              decisionRationale: matchResult.decisionRationale || "",
-              strengths: matchResult.strengths || [],
-              weaknesses: matchResult.weaknesses || [],
-              // New detailed fields
-              requiredSkills: matchResult.requiredSkills || [],
-              matchedSkills: matchResult.matchedSkills || [],
-              unmatchedSkills: matchResult.unmatchedSkills || [],
-              skillsScore: matchResult.skillsScore || 0,
-              toolsJobDescription: matchResult.toolsJobDescription || [],
-              matchedTools: matchResult.matchedTools || [],
-              unmatchedTools: matchResult.unmatchedTools || [],
-              toolsScore: matchResult.toolsScore || 0,
-              rolesJobDescription: matchResult.rolesJobDescription || [],
-              matchedRoles: matchResult.matchedRoles || [],
-              unmatchedRoles: matchResult.unmatchedRoles || [],
-              rolesScore: matchResult.rolesScore || 0,
-              industry: matchResult.industry || [],
-              resumeFit: matchResult.resumeFit || "",
-              profileDetails: matchResult.profileDetails || {},
-              _id: result._id || null // If saved in backend
-            };
-          });
-
-        setResults(transformedResults);
-        setActiveTab('match'); // Switch to results tab
-      } else {
-        setError(data.message || "Failed to match resumes");
+      } catch (err) {
+        if (retries < maxRetries) {
+          retries++;
+          console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+          continue;
+        }
+        setError(
+          "Failed to connect to the server. Please make sure the backend is running."
+        );
+        console.error("Error matching resumes:", err);
+        return;
       }
-    } catch (err) {
-      setError(
-        "Failed to connect to the server. Please make sure the backend is running."
-      );
-      console.error("Error matching resumes:", err);
-    } finally {
-      setIsProcessing(false);
     }
   };
 

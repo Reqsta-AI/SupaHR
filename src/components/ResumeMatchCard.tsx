@@ -239,12 +239,6 @@ const ResumeMatchCard: React.FC<ResumeMatchCardProps> = ({
       {/* ---------- Footer ---------- */}
       <div className="flex justify-between items-center mt-4 pt-2 border-t border-gray-100">
         <button
-          onClick={() => onViewDetails(_id)}
-          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-sm"
-        >
-          View Details
-        </button>
-        <button
           onClick={() => onDelete(_id)}
           className="p-1.5 sm:p-2 border border-red-200 rounded-lg hover:bg-red-50 text-red-500 hover:text-red-700 transition-colors"
         >
@@ -262,6 +256,12 @@ const ResumeMatchCard: React.FC<ResumeMatchCardProps> = ({
               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
             />
           </svg>
+        </button>
+        <button
+          onClick={() => onViewDetails(_id)}
+          className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 shadow-sm"
+        >
+          View Details
         </button>
       </div>
     </div>

@@ -21,9 +21,10 @@ interface OrganizedNote {
 // Define props interface
 interface SmartOrganizerProps {
   userId: string | null;
+  triggerRefresh?: () => void; // Add optional triggerRefresh prop
 }
 
-const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
+const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId, triggerRefresh }) => {
   // Form state
   const [noteInput, setNoteInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -182,7 +183,7 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
     if (isListening) {
       stopListening();
     } else {
-      setNoteInput('');
+      // Only clear input if it's empty or we want to start fresh
       startListening();
     }
   };
@@ -289,30 +290,64 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
       setProcessingStep(prev => (prev < 4 ? prev + 1 : prev));
     }, 500);
     
-    try {
-      const response = await fetch('https://ai-nuto.vercel.app/api/organize-notes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ note: noteInput, userId }),
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setAiOutput(data);
-        // Add to history
-        setHistory(prev => [data, ...prev]);
-      } else {
-        setError(data.message || 'Failed to organize note');
+    // Retry logic
+    let retries = 0;
+    const maxRetries = 1;
+    
+    while (retries <= maxRetries) {
+      try {
+        const response = await fetch('https://ai-nuto.vercel.app/api/organize-notes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ note: noteInput, userId }),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          setAiOutput(data);
+          // Add to history
+          setHistory(prev => [data, ...prev]);
+          
+          // Clear input after successful processing
+          setNoteInput('');
+          setInterimTranscript('');
+          
+          // Call triggerRefresh if provided
+          if (triggerRefresh) {
+            triggerRefresh();
+          }
+          
+          clearInterval(stepInterval);
+          setIsProcessing(false);
+          return; // Success, exit retry loop
+        } else {
+          if (retries < maxRetries) {
+            retries++;
+            console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+            continue;
+          }
+          setError(data.message || 'Failed to organize note');
+          clearInterval(stepInterval);
+          setIsProcessing(false);
+          return;
+        }
+      } catch (err) {
+        if (retries < maxRetries) {
+          retries++;
+          console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+          continue;
+        }
+        setError('Failed to connect to the server. Please make sure the backend is running.');
+        console.error('Error organizing note:', err);
+        clearInterval(stepInterval);
+        setIsProcessing(false);
+        return;
       }
-    } catch (err) {
-      setError('Failed to connect to the server. Please make sure the backend is running.');
-      console.error('Error organizing note:', err);
-    } finally {
-      clearInterval(stepInterval);
-      setIsProcessing(false);
     }
   };
 
@@ -370,7 +405,7 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
             />
             {/* Live Transcript Overlay */}
             {isListening && interimTranscript && (
-              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3">
+              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3 shadow-md">
                 <div className="text-blue-800 font-medium text-sm sm:text-base">Listening...</div>
                 <div className="text-blue-600 text-sm">{interimTranscript}</div>
               </div>

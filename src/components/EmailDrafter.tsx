@@ -13,9 +13,10 @@ interface EmailDraft {
 // Define props interface
 interface EmailDrafterProps {
   userId: string | null;
+  triggerRefresh?: () => void; // Add optional triggerRefresh prop
 }
 
-const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
+const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId, triggerRefresh }) => {
   const [input, setInput] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
@@ -259,7 +260,8 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
     if (isListening) {
       stopListening();
     } else {
-      setInput('');
+      // Only clear input if it's empty or we want to start fresh
+      // Removed setInput('') to prevent clearing user input
       startListening();
     }
   };
@@ -276,32 +278,59 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
     setIsGenerating(true);
     setError('');
     
-    try {
-      
-      const response = await fetch('https://ai-nuto.vercel.app/api/hr/generate-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ description: input, userId }),
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        setSubject(data.subject);
-        setEmail(data.body);
-        // Refresh history to include the new email
-        fetchEmailHistory();
-      } else {
-        setError(data.message || 'Failed to generate email');
+    // Retry logic
+    let retries = 0;
+    const maxRetries = 1;
+    
+    while (retries <= maxRetries) {
+      try {
+        const response = await fetch('https://ai-nuto.vercel.app/api/hr/generate-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ description: input, userId }),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          setSubject(data.subject);
+          setEmail(data.body);
+          // Refresh history to include the new email
+          fetchEmailHistory();
+          
+          // Clear input after successful generation
+          setInput('');
+          setInterimTranscript('');
+          
+          // Call triggerRefresh if provided
+          if (triggerRefresh) {
+            triggerRefresh();
+          }
+          
+          return; // Success, exit retry loop
+        } else {
+          if (retries < maxRetries) {
+            retries++;
+            console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+            continue;
+          }
+          setError(data.message || 'Failed to generate email');
+          return;
+        }
+      } catch (err) {
+        if (retries < maxRetries) {
+          retries++;
+          console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+          continue;
+        }
+        setError('Failed to connect to the server. Please make sure the backend is running.');
+        console.error('Error generating email:', err);
+        return;
       }
-    } catch (err) {
-      setError('Failed to connect to the server. Please make sure the backend is running.');
-      console.error('Error generating email:', err);
-    } finally {
-      setIsGenerating(false);
-      setCopied(false);
     }
   };
 
@@ -321,32 +350,53 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
   const saveEmail = async () => {
     if (!subject.trim() || !email.trim() || !userId) return;
     
-    try {
-      const response = await fetch('https://ai-nuto.vercel.app/api/hr/emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          subject, 
-          body: email, 
-          description: input,
-          userId 
-        }),
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        // Refresh history to include the new email
-        fetchEmailHistory();
-        alert('Email draft saved successfully!');
-      } else {
-        setError(data.message || 'Failed to save email draft');
+    // Retry logic
+    let retries = 0;
+    const maxRetries = 1;
+    
+    while (retries <= maxRetries) {
+      try {
+        const response = await fetch('https://ai-nuto.vercel.app/api/hr/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            subject, 
+            body: email, 
+            description: input,
+            userId 
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          // Refresh history to include the new email
+          fetchEmailHistory();
+          alert('Email draft saved successfully!');
+          return; // Success, exit retry loop
+        } else {
+          if (retries < maxRetries) {
+            retries++;
+            console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+            continue;
+          }
+          setError(data.message || 'Failed to save email draft');
+          return;
+        }
+      } catch (err) {
+        if (retries < maxRetries) {
+          retries++;
+          console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+          continue;
+        }
+        setError('Failed to connect to the server. Please make sure the backend is running.');
+        console.error('Error saving email draft:', err);
+        return;
       }
-    } catch (err) {
-      setError('Failed to connect to the server. Please make sure the backend is running.');
-      console.error('Error saving email draft:', err);
     }
   };
 
@@ -417,8 +467,9 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
               className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
             />
             {interimTranscript && (
-              <div className="absolute bottom-2 left-2 right-2 bg-white/90 p-2 rounded border border-indigo-300">
-                <span className="text-indigo-600">{interimTranscript}</span>
+              <div className="absolute bottom-2 left-2 right-2 bg-white/90 p-2 rounded border border-indigo-300 shadow-md">
+                <div className="text-indigo-600 text-sm font-medium">Listening...</div>
+                <div className="text-indigo-800 text-sm">{interimTranscript}</div>
               </div>
             )}
           </div>

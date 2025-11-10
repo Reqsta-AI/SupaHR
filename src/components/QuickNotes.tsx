@@ -12,7 +12,7 @@ interface LogEntry {
   tag?: string;
 }
 
-const QuickNotes: React.FC = () => {
+const QuickNotes: React.FC<{ triggerRefresh?: () => void }> = ({ triggerRefresh }) => {
   // Form state
   const [candidateName, setCandidateName] = useState('');
   const [logType, setLogType] = useState<'Interview Feedback' | 'Status Update' | 'Action Item'>('Interview Feedback');
@@ -157,6 +157,7 @@ const QuickNotes: React.FC = () => {
       setSaveSuccess(false);
       setIsSaving(false);
       setShowQuickLog(false);
+      triggerRefresh?.();
     }, 1000);
   };
 
