@@ -70,18 +70,7 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
     }
     
     try {
-      // First check if the email exists in our current history
-      const emailInHistory = emailHistory.find(email => email._id === id);
-      if (emailInHistory && process.env.NODE_ENV === 'development') {
-        // For development, use the email from history if available
-        setSubject(emailInHistory.subject);
-        setEmail(emailInHistory.body);
-        setInput(emailInHistory.description);
-        return;
-      }
-      
       // For production or when email not in history, try to fetch from backend
-      if (process.env.NODE_ENV !== 'development') {
         const response = await fetch(`https://ai-nuto.vercel.app/api/hr/emails/${id}?userId=${userId}`);
         const data: EmailDraft = await response.json();
         
@@ -93,7 +82,6 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
           setError(data.message || 'Failed to load email draft');
         }
         return;
-      }
       
       // In development without backend and email not in history
       setError('Email loading not available in development mode without backend.');
@@ -114,18 +102,6 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
     if (!window.confirm('Are you sure you want to delete this email draft?')) return;
     
     try {
-      // In development without backend, don't process
-      if (process.env.NODE_ENV === 'development') {
-        //setError('Email deletion not available in development mode without backend.');
-        // Remove from history even in development for better UX
-        setEmailHistory(prev => prev.filter(email => email._id !== id));
-        // If the deleted email is currently displayed, clear it
-        if (email && subject) {
-          setSubject('');
-          setEmail('');
-        }
-        return;
-      }
       
       const response = await fetch(`https://ai-nuto.vercel.app/api/hr/emails/${id}?userId=${userId}`, {
         method: 'DELETE',
