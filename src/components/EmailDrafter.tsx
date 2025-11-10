@@ -35,11 +35,6 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
     fetchEmailHistory();
   }, [userId]);
 
-  // Function to manually refresh email history
-  const refreshEmailHistory = () => {
-    fetchEmailHistory();
-  };
-
   // Fetch all email drafts
   const fetchEmailHistory = async () => {
     if (!userId) {
@@ -264,8 +259,7 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
     if (isListening) {
       stopListening();
     } else {
-      // Only clear input if it's empty or we want to start fresh
-      // Removed setInput('') to prevent clearing user input
+      setInput('');
       startListening();
     }
   };
@@ -282,50 +276,32 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
     setIsGenerating(true);
     setError('');
     
-    // Retry logic
-    let retries = 0;
-    const maxRetries = 1;
-    
-    while (retries <= maxRetries) {
-      try {
-        const response = await fetch('https://ai-nuto.vercel.app/api/hr/generate-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ description: input, userId }),
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-          setSubject(data.subject);
-          setEmail(data.body);
-          // Refresh history to include the new email
-          fetchEmailHistory();
-          
-          return; // Success, exit retry loop
-        } else {
-          if (retries < maxRetries) {
-            retries++;
-            console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
-            continue;
-          }
-          setError(data.message || 'Failed to generate email');
-          return;
-        }
-      } catch (err) {
-        if (retries < maxRetries) {
-          retries++;
-          console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
-          continue;
-        }
-        setError('Failed to connect to the server. Please make sure the backend is running.');
-        console.error('Error generating email:', err);
-        return;
+    try {
+      
+      const response = await fetch('https://ai-nuto.vercel.app/api/hr/generate-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ description: input, userId }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setSubject(data.subject);
+        setEmail(data.body);
+        // Refresh history to include the new email
+        fetchEmailHistory();
+      } else {
+        setError(data.message || 'Failed to generate email');
       }
+    } catch (err) {
+      setError('Failed to connect to the server. Please make sure the backend is running.');
+      console.error('Error generating email:', err);
+    } finally {
+      setIsGenerating(false);
+      setCopied(false);
     }
   };
 
@@ -335,305 +311,241 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Clear input function
-  const clearInput = () => {
-    setInput('');
-    setInterimTranscript('');
-  };
-
-  // Save email function
-  const saveEmail = async () => {
-    if (!subject.trim() || !email.trim() || !userId) return;
-    
-    // Retry logic
-    let retries = 0;
-    const maxRetries = 1;
-    
-    while (retries <= maxRetries) {
-      try {
-        const response = await fetch('https://ai-nuto.vercel.app/api/hr/emails', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            subject, 
-            body: email, 
-            description: input,
-            userId 
-          }),
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-          // Refresh history to include the new email
-          refreshEmailHistory();
-          alert('Email draft saved successfully!');
-          return; // Success, exit retry loop
-        } else {
-          if (retries < maxRetries) {
-            retries++;
-            console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
-            continue;
-          }
-          setError(data.message || 'Failed to save email draft');
-          return;
-        }
-      } catch (err) {
-        if (retries < maxRetries) {
-          retries++;
-          console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
-          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
-          continue;
-        }
-        setError('Failed to connect to the server. Please make sure the backend is running.');
-        console.error('Error saving email draft:', err);
-        return;
-      }
-    }
-  };
-
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800">Email Drafter</h2>
-          <p className="text-gray-600 mt-1">Create professional emails with AI assistance</p>
-        </div>
-        <button
-          onClick={toggleVoiceRecognition}
-          className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all ${
-            isListening 
-              ? 'bg-red-100 text-red-700 border border-red-300' 
-              : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
-          }`}
-        >
-          <svg 
-            className={`w-5 h-5 mr-2 ${isListening ? 'text-red-500' : 'text-gray-500'}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" 
-            />
-          </svg>
-          {isListening ? 'Stop Listening' : 'Voice Input'}
-        </button>
+    <div className="space-y-8">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center">
+          <span className="mr-3">✉️</span> Email Drafter
+        </h2>
+        <p className="text-gray-600">Create professional emails with AI assistance</p>
       </div>
-
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-center text-red-700">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{error}</span>
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Input Section */}
-        <div className="bg-gray-50 rounded-2xl p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">Describe your email</h3>
-            <button
-              onClick={clearInput}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
-          </div>
-          
-          <div className="relative mb-4">
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="flex flex-col">
+          <div className="mb-6 relative">
+            <label htmlFor="emailInput" className="block text-lg font-medium text-gray-800 mb-3">
+              Describe your email
+            </label>
             <textarea
+              id="emailInput"
+              rows={8}
+              className="w-full px-5 py-4 text-lg border border-gray-300 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 shadow-sm"
+              placeholder="e.g., Draft a rejection email for a candidate applying for a software engineer position"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Describe the email you want to create. For example: Write a follow-up email to a candidate who applied for a software engineer position, thanking them for their interest and informing them that we'll review their application within 5 business days."
-              className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value)}
             />
-            {interimTranscript && (
-              <div className="absolute bottom-2 left-2 right-2 bg-white/90 p-2 rounded border border-indigo-300 shadow-md">
-                <div className="text-indigo-600 text-sm font-medium">Listening...</div>
-                <div className="text-indigo-800 text-sm">{interimTranscript}</div>
+            {/* Live Transcript Overlay */}
+            {isListening && interimTranscript && (
+              <div className="absolute bottom-4 left-4 right-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="text-blue-800 font-medium">Listening...</div>
+                <div className="text-blue-600">{interimTranscript}</div>
               </div>
             )}
           </div>
           
-          <div className="flex flex-wrap gap-3">
+          <div className="flex space-x-4">
             <button
-              onClick={generateEmail}
-              disabled={isGenerating || !input.trim()}
-              className="flex items-center px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg shadow-sm hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all disabled:opacity-50"
+              type="button"
+              className={`flex items-center px-4 py-2 rounded-xl font-medium transition-all ${
+                isListening 
+                  ? 'bg-blue-100 text-blue-700 border-2 border-blue-300' 
+                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+              }`}
+              onClick={toggleVoiceRecognition}
             >
-              {isGenerating ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  Generate Email
-                </>
-              )}
+              <svg className={`w-5 h-5 mr-2 ${isListening ? 'text-blue-600' : 'text-blue-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+              <span>{isListening ? 'Stop Listening' : 'Voice Input'}</span>
             </button>
             
             <button
-              onClick={saveEmail}
-              disabled={!email || !subject}
-              className="flex items-center px-4 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50"
+              type="button"
+              disabled={!input.trim() || isGenerating || !userId}
+              className={`flex-1 py-4 px-6 rounded-2xl font-bold text-white text-lg shadow-xl transition-all duration-300 flex items-center justify-center ${
+                !input.trim() || isGenerating || !userId
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 hover:shadow-2xl transform hover:-translate-y-1'
+              }`}
+              onClick={generateEmail}
             >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-              </svg>
-              Save Draft
+              {isGenerating ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Crafting your email...
+                </>
+              ) : (
+                'Generate Email'
+              )}
             </button>
           </div>
-        </div>
-
-        {/* Output Section */}
-        <div className="bg-gray-50 rounded-2xl p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-800">Generated Email</h3>
-            <div className="flex gap-2">
-              <button
-                onClick={copyToClipboard}
-                disabled={!email}
-                className="flex items-center px-3 py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50"
-              >
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                {copied ? 'Copied!' : 'Copy'}
-              </button>
+          
+          {error && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
+              <p className="font-medium">Error:</p>
+              <p>{error}</p>
             </div>
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              placeholder="Email subject"
-            />
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Body</label>
-            <textarea
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-40 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
-              placeholder="Generated email content"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* History Section */}
-      <div className="mt-8">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">Email History</h3>
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="flex items-center text-sm text-indigo-600 hover:text-indigo-800"
-          >
-            {showHistory ? 'Hide' : 'Show'} History
-            <svg 
-              className={`w-4 h-4 ml-1 transform ${showHistory ? 'rotate-180' : ''} transition-transform`} 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+          )}
         </div>
         
-        {showHistory && (
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
-            {loadingHistory ? (
-              <div className="p-8 text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600"></div>
-                <p className="mt-2 text-gray-600">Loading email history...</p>
-              </div>
-            ) : emailHistory.length === 0 ? (
-              <div className="p-8 text-center">
-                <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <h3 className="mt-4 text-lg font-medium text-gray-900">No email drafts</h3>
-                <p className="mt-1 text-gray-500">Get started by creating a new email draft.</p>
+        <div className="flex flex-col">
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl h-full p-6 border-2 border-dashed border-gray-300">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+              <span className="mr-2">👁️</span> Preview
+            </h3>
+            {email ? (
+              <div className="bg-white border border-gray-200 rounded-xl p-5 h-[400px] overflow-y-auto shadow-inner">
+                <div className="font-sans text-gray-800 whitespace-pre-wrap leading-relaxed">
+                  <div className="font-bold text-lg mb-3">{subject}</div>
+                  <div className="whitespace-pre-wrap">{email}</div>
+                </div>
               </div>
             ) : (
-              <div className="divide-y divide-gray-200">
-                {emailHistory.map((draft) => (
-                  <div key={draft._id} className="p-4 hover:bg-gray-50 transition-colors">
-                    <div className="flex justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">{draft.subject || 'Untitled Draft'}</h4>
-                          <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                            Draft
-                          </span>
-                        </div>
-                        <p className="mt-1 text-sm text-gray-500 truncate">{draft.description || 'No description'}</p>
-                        <p className="mt-1 text-xs text-gray-400">
-                          {new Date(draft.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </p>
-                      </div>
-                      <div className="flex space-x-2 ml-4">
-                        <button
-                          onClick={() => loadEmailDraft(draft._id)}
-                          className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                          </svg>
-                          Open
-                        </button>
-                        <button
-                          onClick={() => deleteEmailDraft(draft._id)}
-                          className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                        >
-                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex flex-col items-center justify-center h-[400px] text-gray-500">
+                <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <p className="text-lg">Your generated email will appear here</p>
+                <p className="text-sm mt-2">Enter a description and click "Generate Email"</p>
               </div>
             )}
           </div>
+        </div>
+      </div>
+      
+      {/* Email History Section */}
+      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+            <span className="mr-2">📜</span> Email History
+          </h2>
+          <div className="flex space-x-3">
+            <button
+              type="button"
+              className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              {showHistory ? 'Hide' : 'Show'} History
+            </button>
+            <button
+              type="button"
+              className="px-4 py-2 text-sm text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors"
+              onClick={fetchEmailHistory}
+              disabled={loadingHistory || !userId}
+            >
+              {loadingHistory ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
+        </div>
+        
+        {!userId ? (
+          <div className="text-center py-8">
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <h3 className="mt-2 text-lg font-medium text-gray-900">Authentication Required</h3>
+            <p className="mt-1 text-gray-500">Please sign in to view your email history.</p>
+          </div>
+        ) : showHistory && (
+          emailHistory.length === 0 ? (
+            <div className="text-center py-8">
+              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <h3 className="mt-2 text-lg font-medium text-gray-900">No email drafts</h3>
+              <p className="mt-1 text-gray-500">Get started by generating your first email.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {emailHistory.map((emailDraft) => (
+                <div 
+                  key={emailDraft._id} 
+                  className="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-all duration-200 cursor-pointer"
+                  onClick={() => loadEmailDraft(emailDraft._id)}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium text-gray-900 truncate max-w-[70%]">
+                      {emailDraft.subject || 'Untitled Email'}
+                    </h3>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteEmailDraft(emailDraft._id);
+                      }}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    {emailDraft.description || emailDraft.body.substring(0, 100) + '...'}
+                  </p>
+                  <div className="flex justify-between items-center text-xs text-gray-500">
+                    <span>{new Date(emailDraft.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
         )}
       </div>
+      
+      {email && (
+        <div className="animate-fade-in">
+          <div className="flex flex-wrap justify-between items-center mb-4">
+            <h3 className="text-2xl font-bold text-gray-800 flex items-center">
+              <span className="mr-2">📄</span> Your Email
+            </h3>
+            <button
+              type="button"
+              className="flex items-center px-5 py-3 bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded-xl font-medium shadow-lg hover:from-gray-800 hover:to-gray-900 transition-all duration-300"
+              onClick={copyToClipboard}
+            >
+              {copied ? (
+                <>
+                  <svg className="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Copied to Clipboard!
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy to Clipboard
+                </>
+              )}
+            </button>
+          </div>
+          <div className="bg-white border-2 border-gray-300 rounded-2xl p-6 shadow-inner">
+            <div className="font-sans text-gray-800 whitespace-pre-wrap leading-relaxed text-lg">
+              <div className="font-bold text-xl mb-4">{subject}</div>
+              <div className="whitespace-pre-wrap">{email}</div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Floating Mic Button */}
+      <button
+        className={`fixed bottom-6 right-6 w-14 h-14 rounded-full text-white shadow-lg flex items-center justify-center transition-all duration-300 z-10 ${
+          isListening 
+            ? 'bg-blue-600 hover:bg-blue-700 animate-pulse' 
+            : 'bg-blue-500 hover:bg-blue-600'
+        }`}
+        onClick={toggleVoiceRecognition}
+        aria-label="Voice Input"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+        </svg>
+      </button>
     </div>
   );
 };
