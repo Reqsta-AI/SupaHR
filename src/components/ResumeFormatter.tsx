@@ -299,26 +299,26 @@ ${education || 'Education history.'}`;
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center">
-          <span className="mr-3">📄</span> Resume Formatter
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center">
+          <span className="mr-2 sm:mr-3">📄</span> Resume Formatter
         </h2>
-        <p className="text-gray-600">Format resumes for maximum impact and ATS compatibility</p>
+        <p className="text-gray-600 text-sm sm:text-base">Format resumes for maximum impact and ATS compatibility</p>
       </div>
       
       {!preview ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
           <div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
               <span className="mr-2">📤</span> Upload Your Resume
             </h3>
             
-            <div className="mb-8">
-              <label className="block text-lg font-medium text-gray-700 mb-3">
+            <div className="mb-6 sm:mb-8">
+              <label className="block text-base sm:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
                 Format Style
               </label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {[
                   { id: 'modern', label: 'Modern', description: 'Clean, contemporary design' },
                   { id: 'classic', label: 'Classic', description: 'Traditional, professional look' },
@@ -328,45 +328,44 @@ ${education || 'Education history.'}`;
                   <button
                     key={style.id}
                     type="button"
-                    className={`p-4 rounded-2xl text-left border-2 transition-all duration-200 ${
+                    className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl text-left border-2 transition-all duration-200 ${
                       formatStyle === style.id
                         ? 'border-indigo-500 bg-indigo-50 shadow-sm'
                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}
-                    onClick={() => setFormatStyle(style.id)}
                   >
-                    <div className="font-medium text-gray-900">{style.label}</div>
-                    <div className="text-sm text-gray-600 mt-1">{style.description}</div>
+                    <div className="font-medium text-gray-900 text-sm sm:text-base">{style.label}</div>
+                    <div className="text-xs sm:text-sm text-gray-600 mt-1">{style.description}</div>
                   </button>
                 ))}
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border-2 border-dashed border-gray-300">
-              <h4 className="text-xl font-bold text-gray-800 mb-3 flex items-center">
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 border-2 border-dashed border-gray-300">
+              <h4 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3 flex items-center">
                 <span className="mr-2">⚙️</span> Formatting Options
               </h4>
               <ul className="space-y-2 text-gray-600">
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <li className="flex items-center text-sm sm:text-base">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   Professional layout design
                 </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <li className="flex items-center text-sm sm:text-base">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   ATS-friendly formatting
                 </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <li className="flex items-center text-sm sm:text-base">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   Keyword optimization
                 </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <li className="flex items-center text-sm sm:text-base">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   One-click download
@@ -376,39 +375,39 @@ ${education || 'Education history.'}`;
           </div>
           
           <div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
               <span className="mr-2">📁</span> Upload Resume
             </h3>
             
             <div 
-              className="h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-3xl p-8 text-center cursor-pointer hover:border-indigo-500 transition-all duration-300 bg-gradient-to-br from-white to-gray-50 hover:from-indigo-50 hover:to-purple-50"
+              className="h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center cursor-pointer hover:border-indigo-500 transition-all duration-300 bg-gradient-to-br from-white to-gray-50 hover:from-indigo-50 hover:to-purple-50"
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               onClick={triggerFileInput}
             >
               {isProcessing ? (
-                <div className="flex flex-col items-center justify-center py-8">
-                  <svg className="animate-spin h-16 w-16 text-indigo-600 mb-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <div className="flex flex-col items-center justify-center py-6 sm:py-8">
+                  <svg className="animate-spin h-12 w-12 sm:h-16 sm:w-16 text-indigo-600 mb-4 sm:mb-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <h4 className="text-2xl font-bold text-gray-800 mb-2">Processing Your Resume</h4>
-                  <p className="text-lg text-gray-600">Extracting text and formatting...</p>
-                  <div className="mt-6 w-full max-w-xs bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-indigo-600 h-2.5 rounded-full animate-progress" style={{ width: '70%' }}></div>
+                  <h4 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Processing Your Resume</h4>
+                  <p className="text-base sm:text-lg text-gray-600">Extracting text and formatting...</p>
+                  <div className="mt-4 sm:mt-6 w-full max-w-xs bg-gray-200 rounded-full h-2">
+                    <div className="bg-indigo-600 h-2 rounded-full animate-progress" style={{ width: '70%' }}></div>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <div className="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center mb-5">
-                    <svg className="w-10 h-10 text-indigo-600" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-indigo-100 flex items-center justify-center mb-4 sm:mb-5">
+                    <svg className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-600" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                       <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <h4 className="text-2xl font-bold text-gray-800 mb-2">Upload Your Resume</h4>
-                  <p className="text-lg text-gray-600 mb-5">Drag & drop your file here or click to browse</p>
+                  <h4 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Upload Your Resume</h4>
+                  <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-5">Drag & drop your file here or click to browse</p>
                   <button 
-                    className="relative cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-xl px-6 py-3 shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-0.5"
+                    className="relative cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg sm:rounded-xl px-4 py-2 sm:px-6 sm:py-3 shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-0.5 text-sm sm:text-base"
                     onClick={(e) => {
                       e.stopPropagation();
                       triggerFileInput();
@@ -423,26 +422,26 @@ ${education || 'Education history.'}`;
                       accept=".pdf,.doc,.docx"
                     />
                   </button>
-                  <p className="text-gray-500 text-sm mt-4">
+                  <p className="text-gray-500 text-xs sm:text-sm mt-3 sm:mt-4">
                     Supports PDF, DOC, DOCX up to 10MB
                   </p>
                   
                   {fileName && (
-                    <div className="mt-6 w-full text-left bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                    <div className="mt-5 sm:mt-6 w-full text-left bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 shadow-sm">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
-                          <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </div>
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-gray-900 truncate">{fileName}</p>
-                          <p className="text-sm text-gray-500">{fileSize}</p>
+                        <div className="ml-2 sm:ml-3">
+                          <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">{fileName}</p>
+                          <p className="text-xs text-gray-500">{fileSize}</p>
                         </div>
                       </div>
                       <button
                         type="button"
-                        className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
+                        className="mt-2 sm:mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-xs sm:text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         onClick={(e) => {
                           e.stopPropagation();
                           extractText();
@@ -458,62 +457,64 @@ ${education || 'Education history.'}`;
             </div>
             
             {error && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
-                <p className="font-medium">Error:</p>
-                <p>{error}</p>
+              <div className="mt-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
+                <p className="font-medium text-sm sm:text-base">Error:</p>
+                <p className="text-sm sm:text-base">{error}</p>
               </div>
             )}
           </div>
         </div>
       ) : (
         <div className="animate-fade-in">
-          <div className="flex flex-wrap justify-between items-center mb-8">
+          <div className="flex flex-wrap justify-between items-center mb-6 sm:mb-8">
             <div>
-              <h3 className="text-2xl font-bold text-gray-800 flex items-center">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
                 <span className="mr-2">✅</span> Formatted Resume
               </h3>
-              <p className="text-gray-600">Your resume has been successfully formatted</p>
+              <p className="text-gray-600 text-sm sm:text-base">Your resume has been successfully formatted</p>
             </div>
-            <div className="flex flex-wrap gap-3 mt-4 md:mt-0">
+            <div className="flex flex-wrap gap-2 sm:gap-3 mt-4 md:mt-0">
               <button
                 type="button"
-                className="flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-xl shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
+                className="flex items-center px-3 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg sm:rounded-xl shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 text-sm sm:text-base"
                 onClick={downloadResume}
               >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                Download Resume
+                <span className="hidden xs:inline">Download</span>
+                <span className="xs:hidden">DL</span>
               </button>
               <button
                 type="button"
-                className="flex items-center px-5 py-2.5 border-2 border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all duration-300"
+                className="flex items-center px-3 py-2 sm:px-5 sm:py-2.5 border-2 border-gray-300 text-gray-700 font-medium rounded-lg sm:rounded-xl hover:bg-gray-50 transition-all duration-300 text-sm sm:text-base"
                 onClick={resetFormatter}
               >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
-                Format Another
+                <span className="hidden xs:inline">Format Another</span>
+                <span className="xs:hidden">Reset</span>
               </button>
             </div>
           </div>
           
-          <div className="border-2 border-gray-200 rounded-2xl p-6 bg-gradient-to-br from-white to-gray-50">
+          <div className="border-2 border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 bg-gradient-to-br from-white to-gray-50">
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-6 h-[500px] overflow-y-auto">
-                <pre className="whitespace-pre-wrap font-sans text-gray-800">
+              <div className="bg-white border border-gray-200 rounded-lg sm:rounded-xl p-4 sm:p-6 h-[400px] sm:h-[500px] overflow-y-auto">
+                <pre className="whitespace-pre-wrap font-sans text-gray-800 text-sm sm:text-base">
                   {formattedText}
                 </pre>
               </div>
               
-              <div className="mt-6 flex flex-wrap gap-3">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+              <div className="mt-4 sm:mt-6 flex flex-wrap gap-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-indigo-100 text-indigo-800">
                   {formatStyle.charAt(0).toUpperCase() + formatStyle.slice(1)} Style
                 </span>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-green-100 text-green-800">
                   Formatted
                 </span>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                <span className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-800">
                   Ready to Download
                 </span>
               </div>

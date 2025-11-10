@@ -344,25 +344,25 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
   }, [noteInput]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center">
-          <span className="mr-3">🧠</span> Smart Organizer
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 flex items-center justify-center">
+          <span className="mr-2 sm:mr-3">🧠</span> Smart Organizer
         </h2>
-        <p className="text-gray-600">AI-powered note organization and insights</p>
+        <p className="text-gray-600 text-sm sm:text-base">AI-powered note organization and insights</p>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <div className="flex flex-col">
-          <div className="mb-6 relative">
-            <label htmlFor="noteInput" className="block text-lg font-medium text-gray-800 mb-3">
+          <div className="mb-4 sm:mb-6 relative">
+            <label htmlFor="noteInput" className="block text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">
               Your Note
             </label>
             <textarea
               ref={textareaRef}
               id="noteInput"
-              rows={6}
-              className="w-full px-5 py-4 text-lg border border-gray-300 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 shadow-sm resize-none"
+              rows={4}
+              className="w-full px-3 py-2 sm:px-5 sm:py-4 text-base sm:text-lg border border-gray-300 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 shadow-sm resize-none"
               placeholder="e.g., Interview with John Doe for Software Engineer position. Candidate has 5 years of experience with React and Node.js. Strong communication skills. Follow up next week."
               value={noteInput}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNoteInput(e.target.value)}
@@ -370,17 +370,17 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
             />
             {/* Live Transcript Overlay */}
             {isListening && interimTranscript && (
-              <div className="absolute bottom-4 left-4 right-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <div className="text-blue-800 font-medium">Listening...</div>
-                <div className="text-blue-600">{interimTranscript}</div>
+              <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-3">
+                <div className="text-blue-800 font-medium text-sm sm:text-base">Listening...</div>
+                <div className="text-blue-600 text-sm">{interimTranscript}</div>
               </div>
             )}
           </div>
           
-          <div className="flex space-x-4">
+          <div className="flex flex-wrap gap-3">
             <button
               type="button"
-              className={`flex items-center px-4 py-2 rounded-xl font-medium transition-all ${
+              className={`flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl font-medium transition-all text-sm sm:text-base ${
                 isListening 
                   ? 'bg-blue-100 text-blue-700 border-2 border-blue-300' 
                   : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
@@ -388,33 +388,35 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
               onClick={toggleVoiceRecognition}
               disabled={!userId}
             >
-              <svg className={`w-5 h-5 mr-2 ${isListening ? 'text-blue-600' : 'text-blue-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className={`w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 ${isListening ? 'text-blue-600' : 'text-blue-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
               </svg>
-              <span>{isListening ? 'Stop Listening' : 'Voice Input'}</span>
+              <span className="whitespace-nowrap">{isListening ? 'Stop Listening' : 'Voice Input'}</span>
             </button>
             
             <button
               type="button"
               disabled={!noteInput.trim() || isProcessing || !userId}
-              className={`flex-1 py-4 px-6 rounded-2xl font-bold text-white text-lg shadow-xl transition-all duration-300 flex items-center justify-center ${
+              className={`flex-1 py-3 px-4 sm:py-4 sm:px-6 rounded-xl sm:rounded-2xl font-bold text-white text-base sm:text-lg shadow-lg sm:shadow-xl transition-all duration-300 flex items-center justify-center ${
                 !noteInput.trim() || isProcessing || !userId
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 hover:shadow-2xl transform hover:-translate-y-1'
+                  : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 hover:shadow-2xl transform hover:-translate-y-0.5'
               }`}
               onClick={organizeNote}
             >
               {isProcessing ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-2 sm:mr-3 h-4 w-4 sm:h-6 sm:w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {processingStep === 0 && 'Analyzing...'}
-                  {processingStep === 1 && 'Extracting entities...'}
-                  {processingStep === 2 && 'Categorizing...'}
-                  {processingStep === 3 && 'Prioritizing...'}
-                  {processingStep === 4 && 'Finalizing...'}
+                  <span className="text-sm sm:text-base">
+                    {processingStep === 0 && 'Analyzing...'}
+                    {processingStep === 1 && 'Extracting entities...'}
+                    {processingStep === 2 && 'Categorizing...'}
+                    {processingStep === 3 && 'Prioritizing...'}
+                    {processingStep === 4 && 'Finalizing...'}
+                  </span>
                 </>
               ) : (
                 'Organize Note'
@@ -423,14 +425,14 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
           </div>
           
           {!userId && (
-            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-yellow-700">
+            <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-yellow-50 border border-yellow-200 rounded-lg sm:rounded-xl text-yellow-700 text-sm sm:text-base">
               <p className="font-medium">Authentication Required:</p>
               <p>Please sign in to use the smart organizer feature.</p>
             </div>
           )}
           
           {error && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
+            <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg sm:rounded-xl text-red-700 text-sm sm:text-base">
               <p className="font-medium">Error:</p>
               <p>{error}</p>
             </div>
@@ -438,56 +440,56 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
         </div>
         
         <div className="flex flex-col">
-          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl h-full p-6 border-2 border-dashed border-gray-300">
-            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl sm:rounded-2xl h-full p-4 sm:p-6 border-2 border-dashed border-gray-300">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center">
               <span className="mr-2">👁️</span> Preview
             </h3>
             {aiOutput ? (
-              <div className="bg-white border border-gray-200 rounded-xl p-5 h-[400px] overflow-y-auto shadow-inner">
-                <div className="space-y-4">
+              <div className="bg-white border border-gray-200 rounded-lg sm:rounded-xl p-3 sm:p-5 h-[300px] sm:h-[400px] overflow-y-auto shadow-inner">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <h4 className="font-bold text-gray-900 mb-2">Summary</h4>
-                    <p className="text-gray-700">{aiOutput.summary}</p>
+                    <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Summary</h4>
+                    <p className="text-gray-700 text-sm sm:text-base">{aiOutput.summary}</p>
                   </div>
                   
                   <div>
-                    <h4 className="font-bold text-gray-900 mb-2">Entities</h4>
-                    <div className="grid grid-cols-2 gap-3">
+                    <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Entities</h4>
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <div>
-                        <h5 className="text-sm font-medium text-gray-700 mb-1">Candidates</h5>
+                        <h5 className="text-xs sm:text-sm font-medium text-gray-700 mb-1">Candidates</h5>
                         <div className="flex flex-wrap gap-1">
                           {aiOutput.entities.candidates.map((candidate, index) => (
-                            <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-indigo-100 text-indigo-800">
+                            <span key={index} className="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium bg-indigo-100 text-indigo-800">
                               {candidate}
                             </span>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <h5 className="text-sm font-medium text-gray-700 mb-1">Colleagues</h5>
+                        <h5 className="text-xs sm:text-sm font-medium text-gray-700 mb-1">Colleagues</h5>
                         <div className="flex flex-wrap gap-1">
                           {aiOutput.entities.colleagues.map((colleague, index) => (
-                            <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+                            <span key={index} className="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
                               {colleague}
                             </span>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <h5 className="text-sm font-medium text-gray-700 mb-1">Roles</h5>
+                        <h5 className="text-xs sm:text-sm font-medium text-gray-700 mb-1">Roles</h5>
                         <div className="flex flex-wrap gap-1">
                           {aiOutput.entities.roles.map((role, index) => (
-                            <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-800">
+                            <span key={index} className="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-800">
                               {role}
                             </span>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <h5 className="text-sm font-medium text-gray-700 mb-1">Companies</h5>
+                        <h5 className="text-xs sm:text-sm font-medium text-gray-700 mb-1">Companies</h5>
                         <div className="flex flex-wrap gap-1">
                           {aiOutput.entities.companies.map((company, index) => (
-                            <span key={index} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
+                            <span key={index} className="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
                               {company}
                             </span>
                           ))}
@@ -497,20 +499,20 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
                   </div>
                   
                   <div>
-                    <h4 className="font-bold text-gray-900 mb-2">Tasks</h4>
-                    <ul className="list-disc pl-5 space-y-1">
+                    <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Tasks</h4>
+                    <ul className="list-disc pl-4 sm:pl-5 space-y-1">
                       {aiOutput.tasks.map((task, index) => (
-                        <li key={index} className="text-gray-700">{task}</li>
+                        <li key={index} className="text-gray-700 text-sm sm:text-base">{task}</li>
                       ))}
                     </ul>
                   </div>
                   
-                  <div className="flex flex-wrap gap-2">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(aiOutput.priority)}`}>
+                  <div className="flex flex-wrap gap-1 sm:gap-2">
+                    <span className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${getPriorityColor(aiOutput.priority)}`}>
                       Priority: {aiOutput.priority}
                     </span>
                     {aiOutput.tags.map((tag, index) => (
-                      <span key={index} className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getTagColor(tag)}`}>
+                      <span key={index} className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${getTagColor(tag)}`}>
                         {tag}
                       </span>
                     ))}
@@ -518,12 +520,12 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-[400px] text-gray-500">
-                <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <div className="flex flex-col items-center justify-center h-[300px] sm:h-[400px] text-gray-500">
+                <svg className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <p className="text-lg">Your organized note will appear here</p>
-                <p className="text-sm mt-2">Enter a note and click "Organize Note"</p>
+                <p className="text-base sm:text-lg">Your organized note will appear here</p>
+                <p className="text-xs sm:text-sm mt-1 sm:mt-2">Enter a note and click "Organize Note"</p>
               </div>
             )}
           </div>
@@ -531,28 +533,28 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
       </div>
       
       {/* History Section */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-200">
+        <div className="flex flex-wrap justify-between items-center mb-4 sm:mb-6 gap-3">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
             <span className="mr-2">📜</span> Note History
           </h2>
-          <div className="flex space-x-3">
-            <div className="relative">
+          <div className="flex flex-wrap gap-2">
+            <div className="relative w-full sm:w-auto">
               <input
                 type="text"
                 placeholder="Search notes..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full pl-8 pr-3 py-1.5 sm:pl-10 sm:pr-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 disabled={!userId}
               />
-              <svg className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 absolute left-2 top-2 sm:left-3 sm:top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </div>
             <button
               type="button"
-              className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm text-gray-700 bg-gray-100 rounded-lg sm:rounded-xl hover:bg-gray-200 transition-colors"
               onClick={() => setShowHistory(!showHistory)}
               disabled={!userId}
             >
@@ -560,7 +562,7 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
             </button>
             <button
               type="button"
-              className="px-4 py-2 text-sm text-indigo-700 bg-indigo-50 rounded-xl hover:bg-indigo-100 transition-colors"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm text-indigo-700 bg-indigo-50 rounded-lg sm:rounded-xl hover:bg-indigo-100 transition-colors"
               onClick={fetchHistory}
               disabled={loadingHistory || !userId}
             >
@@ -570,24 +572,24 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
         </div>
         
         {!userId ? (
-          <div className="text-center py-8">
-            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <div className="text-center py-6 sm:py-8">
+            <svg className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            <h3 className="mt-2 text-lg font-medium text-gray-900">Authentication Required</h3>
-            <p className="mt-1 text-gray-500">Please sign in to view your note history.</p>
+            <h3 className="mt-2 text-base sm:text-lg font-medium text-gray-900">Authentication Required</h3>
+            <p className="mt-1 text-gray-500 text-sm sm:text-base">Please sign in to view your note history.</p>
           </div>
         ) : showHistory && (
           history.length === 0 ? (
-            <div className="text-center py-8">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="text-center py-6 sm:py-8">
+              <svg className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <h3 className="mt-2 text-lg font-medium text-gray-900">No organized notes</h3>
-              <p className="mt-1 text-gray-500">Get started by organizing your first note.</p>
+              <h3 className="mt-2 text-base sm:text-lg font-medium text-gray-900">No organized notes</h3>
+              <p className="mt-1 text-gray-500 text-sm sm:text-base">Get started by organizing your first note.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {history
                 .filter(note => 
                   searchTerm === '' || 
@@ -597,11 +599,11 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
                 .map((note) => (
                   <div 
                     key={note._id} 
-                    className="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-all duration-200 cursor-pointer"
+                    className="border border-gray-200 rounded-lg sm:rounded-xl p-3 sm:p-4 hover:bg-gray-50 transition-all duration-200 cursor-pointer"
                     onClick={() => loadNote(note._id)}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-medium text-gray-900 truncate max-w-[70%]">
+                      <h3 className="font-medium text-gray-900 truncate max-w-[70%] text-sm sm:text-base">
                         {note.summary || 'Untitled Note'}
                       </h3>
                       <button
@@ -611,25 +613,25 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
                           deleteNote(note._id);
                         }}
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                       </button>
                     </div>
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2">
                       {note.originalNote}
                     </p>
                     <div className="flex flex-wrap gap-1">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${getPriorityColor(note.priority)}`}>
+                      <span className={`inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium ${getPriorityColor(note.priority)}`}>
                         {note.priority}
                       </span>
                       {note.tags.slice(0, 2).map((tag, index) => (
-                        <span key={index} className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${getTagColor(tag)}`}>
+                        <span key={index} className={`inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium ${getTagColor(tag)}`}>
                           {tag}
                         </span>
                       ))}
                       {note.tags.length > 2 && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
+                        <span className="inline-flex items-center px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
                           +{note.tags.length - 2}
                         </span>
                       )}
@@ -646,7 +648,7 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
       
       {/* Floating Mic Button */}
       <button
-        className={`fixed bottom-6 right-6 w-14 h-14 rounded-full text-white shadow-lg flex items-center justify-center transition-all duration-300 z-10 ${
+        className={`fixed bottom-4 sm:bottom-6 right-4 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 rounded-full text-white shadow-lg flex items-center justify-center transition-all duration-300 z-10 ${
           isListening 
             ? 'bg-blue-600 hover:bg-blue-700 animate-pulse' 
             : 'bg-blue-500 hover:bg-blue-600'
@@ -655,7 +657,7 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
         aria-label="Voice Input"
         disabled={!userId}
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
         </svg>
       </button>
