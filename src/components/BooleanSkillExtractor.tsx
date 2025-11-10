@@ -21,9 +21,10 @@ interface ExtractedSkillsResponse {
 // Define props interface
 interface BooleanSkillExtractorProps {
   userId: string | null;
+  triggerRefresh?: () => void; // Add optional triggerRefresh prop
 }
 
-const BooleanSkillExtractor: React.FC<BooleanSkillExtractorProps> = ({ userId }) => {
+const BooleanSkillExtractor: React.FC<BooleanSkillExtractorProps> = ({ userId, triggerRefresh }) => {
   const [input, setInput] = useState('');
   const [results, setResults] = useState<ExtractedSkillsResponse | null>(null);
   const [copied, setCopied] = useState(false);
@@ -117,30 +118,57 @@ const BooleanSkillExtractor: React.FC<BooleanSkillExtractorProps> = ({ userId })
     setIsExtracting(true);
     setError('');
     
-    try {
-      const response = await fetch('https://ai-nuto.vercel.app/api/extract-boolean-skills', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ jobDescription: input, userId }),
-      });
-      
-      const data: ExtractedSkillsResponse = await response.json();
-      
-      if (response.ok) {
-        setResults(data);
-        // Refresh history to include the new extraction
-        fetchSkillHistory();
-      } else {
-        setError(data.message || 'Failed to extract skills');
+    // Retry logic
+    let retries = 0;
+    const maxRetries = 1;
+    
+    while (retries <= maxRetries) {
+      try {
+        const response = await fetch('https://ai-nuto.vercel.app/api/extract-boolean-skills', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ jobDescription: input, userId }),
+        });
+        
+        const data: ExtractedSkillsResponse = await response.json();
+        
+        if (response.ok) {
+          setResults(data);
+          // Refresh history to include the new extraction
+          fetchSkillHistory();
+          
+          // Clear input after successful extraction
+          setInput('');
+          
+          // Call triggerRefresh if provided
+          if (triggerRefresh) {
+            triggerRefresh();
+          }
+          
+          return; // Success, exit retry loop
+        } else {
+          if (retries < maxRetries) {
+            retries++;
+            console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+            continue;
+          }
+          setError(data.message || 'Failed to extract skills');
+          return;
+        }
+      } catch (err) {
+        if (retries < maxRetries) {
+          retries++;
+          console.log(`API request failed, retrying... (${retries}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+          continue;
+        }
+        setError('Failed to connect to the server. Please make sure the backend is running.');
+        console.error('Error extracting skills:', err);
+        return;
       }
-    } catch (err) {
-      setError('Failed to connect to the server. Please make sure the backend is running.');
-      console.error('Error extracting skills:', err);
-    } finally {
-      setIsExtracting(false);
-      setCopied(false);
     }
   };
 
