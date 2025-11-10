@@ -16,12 +16,6 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0); // Keep this for refresh mechanism
-
-  // Function to trigger refresh for specific components only
-  const triggerComponentRefresh = () => {
-    setRefreshKey(prev => prev + 1);
-  };
 
   // Check if user is already authenticated on app load
   useEffect(() => {
@@ -95,7 +89,7 @@ function App() {
               <h1 className="ml-3 text-xl font-bold text-gray-900 hidden sm:block">HR Smart Helper</h1>
             </div>
             
-            <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center space-x-4">
               {!isAuthenticated ? (
                 <>
                   <button 
@@ -103,7 +97,7 @@ function App() {
                       setAuthMode('signin');
                       setShowAuthModal(true);
                     }}
-                    className="px-3 py-1.5 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors whitespace-nowrap"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                   >
                     Sign In
                   </button>
@@ -112,17 +106,17 @@ function App() {
                       setAuthMode('signup');
                       setShowAuthModal(true);
                     }}
-                    className="px-3 py-1.5 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg shadow-sm hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all whitespace-nowrap"
+                    className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg shadow-sm hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                   >
                     Sign Up
                   </button>
                 </>
               ) : (
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <span className="text-xs sm:text-sm text-gray-700 hidden md:inline">Welcome!</span>
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm text-gray-700 hidden md:inline">Welcome!</span>
                   <button 
                     onClick={handleSignOut}
-                    className="px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors whitespace-nowrap"
+                    className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                   >
                     Sign Out
                   </button>
@@ -135,10 +129,20 @@ function App() {
 
       {/* Main Content */}
       <main className="pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Hero Section */}
+          {/* <div className="text-center mb-10">
+            <h1 className="text-4xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 mb-4">
+              HR Smart Helper
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Your all-in-one AI-powered assistant for HR tasks. Everything you need in a single page application.
+            </p>
+          </div> */}
+          
           {/* Feature Tabs */}
-          <div className="mb-6 sm:mb-8">
-            <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+          <div className="mb-8">
+            <div className="flex flex-wrap gap-2 justify-center">
               {[
                 { id: 'organizer', label: 'AI Notebook', icon: '🧠' },
                 { id: 'email', label: 'Email Drafter', icon: '✉️' },
@@ -150,14 +154,14 @@ function App() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
+                  className={`flex items-center px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg transform scale-105'
                       : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200 hover:border-indigo-300 shadow-sm'
                   }`}
                 >
-                  <span className="mr-1 text-sm sm:mr-2 sm:text-base">{tab.icon}</span>
-                  <span className="whitespace-nowrap">{tab.label}</span>
+                  <span className="mr-2 text-base">{tab.icon}</span>
+                  {tab.label}
                 </button>
               ))}
             </div>
@@ -166,7 +170,7 @@ function App() {
           {/* Dashboard View */}
           {activeTab === 'dashboard' && (
             <div className="animate-fade-in">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                 {[
                   { id: 'email', label: 'Email Drafter', icon: '✉️', desc: 'Create professional emails with AI assistance' },
                   { id: 'resume', label: 'Resume Formatter', icon: '📄', desc: 'Format resumes for better presentation' },
@@ -177,15 +181,15 @@ function App() {
                 ].map((feature) => (
                   <div 
                     key={feature.id}
-                    className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 flex flex-col h-full"
+                    className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 flex flex-col h-full"
                     onClick={() => setActiveTab(feature.id)}
                   >
-                    <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">{feature.icon}</div>
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">{feature.label}</h3>
-                    <p className="text-sm sm:text-gray-600 flex-grow">{feature.desc}</p>
-                    <div className="mt-3 sm:mt-4 text-indigo-600 font-medium flex items-center text-sm">
+                    <div className="text-4xl mb-4">{feature.icon}</div>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">{feature.label}</h3>
+                    <p className="text-gray-600 flex-grow">{feature.desc}</p>
+                    <div className="mt-4 text-indigo-600 font-medium flex items-center">
                       <span>Open</span>
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
@@ -194,13 +198,13 @@ function App() {
               </div>
               
               {/* Quick Access Section */}
-              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 text-white text-center">
-                <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3">Voice Assistant Ready</h2>
-                <p className="text-sm sm:text-base text-indigo-100 mb-4 sm:mb-6 max-w-2xl mx-auto">
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl shadow-xl p-8 text-white text-center">
+                <h2 className="text-2xl font-bold mb-3">Voice Assistant Ready</h2>
+                <p className="text-indigo-100 mb-6 max-w-2xl mx-auto">
                   Activate voice commands to control all features hands-free. Try saying "Open email drafter" or "Format a resume".
                 </p>
-                <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 sm:px-6 sm:py-3 rounded-full text-sm sm:text-base">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
                   <span>Click the microphone icon in the bottom right to activate</span>
@@ -211,8 +215,8 @@ function App() {
           
           {/* Individual Feature Views */}
           {(activeTab === 'email' || activeTab === 'resume' || activeTab === 'boolean' || activeTab === 'notes' || activeTab === 'organizer' || activeTab === 'matcher') && (
-            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
-              <div className="p-4 sm:p-6 md:p-8">
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+              <div className="p-6 md:p-8">
                 {activeTab === 'email' && <EmailDrafter userId={userId} />}
                 {activeTab === 'resume' && <ResumeFormatter />}
                 {activeTab === 'boolean' && <BooleanSkillExtractor userId={userId} />}
@@ -228,25 +232,25 @@ function App() {
       {/* Authentication Modal */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-4 sm:p-6 border-b border-gray-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6 border-b border-gray-200">
               <div className="flex justify-between items-center">
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
+                <h3 className="text-2xl font-bold text-gray-900">
                   {authMode === 'signin' ? 'Sign In' : 'Sign Up'}
                 </h3>
                 <button 
                   onClick={() => setShowAuthModal(false)}
                   className="text-gray-400 hover:text-gray-500"
                 >
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
             </div>
             
-            <form onSubmit={handleAuthSubmit} className="p-4 sm:p-6">
-              <div className="mb-4 sm:mb-6">
+            <form onSubmit={handleAuthSubmit} className="p-6">
+              <div className="mb-6">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
                 </label>
@@ -255,17 +259,17 @@ function App() {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm sm:text-base"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                   placeholder="you@example.com"
                   required
                 />
               </div>
               
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full px-4 py-2.5 sm:px-4 sm:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg shadow-sm hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all disabled:opacity-50 text-sm sm:text-base"
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg shadow-sm hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all disabled:opacity-50"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
@@ -282,7 +286,7 @@ function App() {
                 <button
                   type="button"
                   onClick={() => setShowAuthModal(false)}
-                  className="w-full px-4 py-2.5 sm:px-4 sm:py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors text-sm sm:text-base"
+                  className="px-4 py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                 >
                   Cancel
                 </button>

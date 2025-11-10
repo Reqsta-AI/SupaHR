@@ -119,14 +119,14 @@ const VoiceAssistant: React.FC = () => {
 
   if (!isSupported) {
     return (
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 bg-red-100 border border-red-400 text-red-700 px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl shadow-lg max-w-[280px] sm:max-w-xs z-30">
+      <div className="fixed bottom-6 right-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-lg max-w-xs z-30">
         <div className="flex items-start">
-          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 mr-1.5 sm:mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg className="w-5 h-5 text-red-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
           <div>
-            <p className="text-xs sm:text-sm font-medium">Voice Assistant Not Supported</p>
-            <p className="text-[10px] sm:text-xs mt-1">Try using Chrome, Edge, or Safari</p>
+            <p className="text-sm font-medium">Voice Assistant Not Supported</p>
+            <p className="text-xs mt-1">Try using Chrome, Edge, or Safari</p>
           </div>
         </div>
       </div>
@@ -136,10 +136,10 @@ const VoiceAssistant: React.FC = () => {
   return (
     <>
       {/* Voice Assistant Button */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-30">
+      <div className="fixed bottom-6 right-6 z-30">
         <button
           type="button"
-          className={`flex flex-col items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ${
+          className={`flex flex-col items-center justify-center w-16 h-16 rounded-full shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ${
             isListening 
               ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
               : 'bg-gradient-to-br from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
@@ -148,7 +148,7 @@ const VoiceAssistant: React.FC = () => {
           aria-label={isListening ? "Stop listening" : "Start voice assistant"}
         >
           <svg 
-            className="h-5 w-5 sm:h-7 sm:w-7 text-white" 
+            className="h-7 w-7 text-white" 
             xmlns="http://www.w3.org/2000/svg" 
             fill="none" 
             viewBox="0 0 24 24" 
@@ -162,17 +162,17 @@ const VoiceAssistant: React.FC = () => {
             />
           </svg>
           {isListening && (
-            <span className="text-[10px] sm:text-xs text-white font-medium mt-0.5">Listening</span>
+            <span className="text-xs text-white font-medium mt-0.5">Listening</span>
           )}
         </button>
         
         {/* Volume Visualization */}
         {isListening && (
-          <div className="absolute -top-12 sm:-top-16 left-1/2 transform -translate-x-1/2 flex items-end justify-center h-8 sm:h-12 gap-0.5 sm:gap-1">
+          <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 flex items-end justify-center h-12 gap-1">
             {[...Array(5)].map((_, i) => (
               <div 
                 key={i}
-                className="w-1 sm:w-2 bg-white rounded-t transition-all duration-150"
+                className="w-2 bg-white rounded-t transition-all duration-150"
                 style={{ 
                   height: `${Math.min(100, volume + (i * 10))}%`,
                   opacity: volume > 0 ? 0.8 : 0.3
@@ -185,25 +185,25 @@ const VoiceAssistant: React.FC = () => {
       
       {/* Transcript Panel */}
       {transcript && (
-        <div className="fixed bottom-20 sm:bottom-24 right-4 sm:right-6 bg-white border border-gray-200 rounded-xl sm:rounded-2xl shadow-xl p-3 sm:p-5 max-w-[280px] sm:max-w-md z-20 animate-fade-in">
-          <div className="flex justify-between items-start mb-2 sm:mb-3">
+        <div className="fixed bottom-24 right-6 bg-white border border-gray-200 rounded-2xl shadow-xl p-5 max-w-md z-20 animate-fade-in">
+          <div className="flex justify-between items-start mb-3">
             <div className="flex items-center">
-              <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full mr-1.5 sm:mr-2 animate-pulse"></div>
-              <h3 className="font-bold text-gray-800 text-sm sm:text-base">Voice Assistant</h3>
+              <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+              <h3 className="font-bold text-gray-800">Voice Assistant</h3>
             </div>
             <button 
               type="button" 
               className="text-gray-400 hover:text-gray-500 transition-colors"
               onClick={() => setTranscript('')}
             >
-              <svg className="h-4 w-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <svg className="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
           </div>
-          <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">{transcript}</p>
-          <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-100">
-            <p className="text-[10px] sm:text-xs text-gray-500">Try saying: "Go to dashboard", "Open email drafter", etc.</p>
+          <p className="text-gray-700 text-sm leading-relaxed">{transcript}</p>
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-xs text-gray-500">Try saying: "Go to dashboard", "Open email drafter", etc.</p>
           </div>
         </div>
       )}
