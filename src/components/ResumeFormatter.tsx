@@ -35,7 +35,7 @@ const saveAs = (blob: Blob, filename: string) => {
   console.log(`Would save file: ${filename}`);
 };
 
-const ResumeFormatter: React.FC<{ triggerRefresh?: () => void }> = ({ triggerRefresh }) => {
+const ResumeFormatter: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState('');
   const [fileSize, setFileSize] = useState('');

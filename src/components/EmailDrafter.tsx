@@ -13,10 +13,9 @@ interface EmailDraft {
 // Define props interface
 interface EmailDrafterProps {
   userId: string | null;
-  triggerRefresh?: () => void; // Add optional triggerRefresh prop
 }
 
-const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId, triggerRefresh }) => {
+const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId }) => {
   const [input, setInput] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
@@ -35,6 +34,11 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId, triggerRefresh }) =
   useEffect(() => {
     fetchEmailHistory();
   }, [userId]);
+
+  // Function to manually refresh email history
+  const refreshEmailHistory = () => {
+    fetchEmailHistory();
+  };
 
   // Fetch all email drafts
   const fetchEmailHistory = async () => {
@@ -300,15 +304,6 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId, triggerRefresh }) =
           // Refresh history to include the new email
           fetchEmailHistory();
           
-          // Clear input after successful generation
-          setInput('');
-          setInterimTranscript('');
-          
-          // Call triggerRefresh if provided
-          if (triggerRefresh) {
-            triggerRefresh();
-          }
-          
           return; // Success, exit retry loop
         } else {
           if (retries < maxRetries) {
@@ -373,7 +368,7 @@ const EmailDrafter: React.FC<EmailDrafterProps> = ({ userId, triggerRefresh }) =
         
         if (response.ok) {
           // Refresh history to include the new email
-          fetchEmailHistory();
+          refreshEmailHistory();
           alert('Email draft saved successfully!');
           return; // Success, exit retry loop
         } else {
