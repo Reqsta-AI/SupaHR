@@ -21,10 +21,9 @@ interface ExtractedSkillsResponse {
 // Define props interface
 interface BooleanSkillExtractorProps {
   userId: string | null;
-  triggerRefresh?: () => void; // Add optional triggerRefresh prop
 }
 
-const BooleanSkillExtractor: React.FC<BooleanSkillExtractorProps> = ({ userId, triggerRefresh }) => {
+const BooleanSkillExtractor: React.FC<BooleanSkillExtractorProps> = ({ userId }) => {
   const [input, setInput] = useState('');
   const [results, setResults] = useState<ExtractedSkillsResponse | null>(null);
   const [copied, setCopied] = useState(false);
@@ -62,6 +61,11 @@ const BooleanSkillExtractor: React.FC<BooleanSkillExtractorProps> = ({ userId, t
     } finally {
       setLoadingHistory(false);
     }
+  };
+
+  // Function to manually refresh skill history
+  const refreshSkillHistory = () => {
+    fetchSkillHistory();
   };
 
   // Load a specific skill extraction
@@ -137,15 +141,7 @@ const BooleanSkillExtractor: React.FC<BooleanSkillExtractorProps> = ({ userId, t
         if (response.ok) {
           setResults(data);
           // Refresh history to include the new extraction
-          fetchSkillHistory();
-          
-          // Clear input after successful extraction
-          setInput('');
-          
-          // Call triggerRefresh if provided
-          if (triggerRefresh) {
-            triggerRefresh();
-          }
+          refreshSkillHistory();
           
           return; // Success, exit retry loop
         } else {

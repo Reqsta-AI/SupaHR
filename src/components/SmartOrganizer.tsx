@@ -21,10 +21,9 @@ interface OrganizedNote {
 // Define props interface
 interface SmartOrganizerProps {
   userId: string | null;
-  triggerRefresh?: () => void; // Add optional triggerRefresh prop
 }
 
-const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId, triggerRefresh }) => {
+const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId }) => {
   // Form state
   const [noteInput, setNoteInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -223,6 +222,11 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId, triggerRefresh 
     }
   };
 
+  // Function to manually refresh history
+  const refreshHistory = () => {
+    fetchHistory();
+  };
+
   // Load a specific note by ID
   const loadNote = async (id: string) => {
     if (!userId) return;
@@ -311,17 +315,9 @@ const SmartOrganizer: React.FC<SmartOrganizerProps> = ({ userId, triggerRefresh 
           // Add to history
           setHistory(prev => [data, ...prev]);
           
-          // Clear input after successful processing
-          setNoteInput('');
-          setInterimTranscript('');
+          // Refresh history data
+          refreshHistory();
           
-          // Call triggerRefresh if provided
-          if (triggerRefresh) {
-            triggerRefresh();
-          }
-          
-          clearInterval(stepInterval);
-          setIsProcessing(false);
           return; // Success, exit retry loop
         } else {
           if (retries < maxRetries) {

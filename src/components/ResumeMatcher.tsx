@@ -4,10 +4,9 @@ import ResumeMatchCard from "./ResumeMatchCard";
 // Define props interface
 interface ResumeMatcherProps {
   userId: string | null;
-  triggerRefresh?: () => void; // Add optional triggerRefresh prop
 }
 
-const ResumeMatcher: React.FC<ResumeMatcherProps> = ({ userId, triggerRefresh }) => {
+const ResumeMatcher: React.FC<ResumeMatcherProps> = ({ userId }) => {
   const [jdFile, setJdFile] = useState<File | null>(null);
   const [resumeFiles, setResumeFiles] = useState<File[]>([]);
   const [jdText, setJdText] = useState("");
@@ -46,6 +45,11 @@ const ResumeMatcher: React.FC<ResumeMatcherProps> = ({ userId, triggerRefresh })
     } catch (err) {
       console.warn("Backend not available for saved matches");
     }
+  };
+
+  // Function to manually refresh saved matches
+  const refreshSavedMatches = () => {
+    fetchSavedMatches();
   };
 
   const fetchSavedMatchById = async (id: string) => {
@@ -237,15 +241,8 @@ const ResumeMatcher: React.FC<ResumeMatcherProps> = ({ userId, triggerRefresh })
           setResults(transformedResults);
           setActiveTab('match'); // Switch to results tab
           
-          // Clear input files after successful processing
-          setJdFile(null);
-          setJdText('');
-          setResumeFiles([]);
-          
-          // Call triggerRefresh if provided
-          if (triggerRefresh) {
-            triggerRefresh();
-          }
+          // Refresh saved matches
+          refreshSavedMatches();
           
           return; // Success, exit the retry loop
         } else {
